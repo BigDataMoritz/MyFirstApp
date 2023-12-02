@@ -8,6 +8,7 @@ URL  = "http://127.0.0.1:8000"
 ENDPOINT_DATA = URL+ "/level-1/data"
 ENDPOINT_TEAMS = URL+ "/level-1/teams"
 ENDPOINT_STATS = URL+ "/level-2/stats"
+ENDPOINT_ALGO = URL+ "/level-3/stats"
 
 
 
@@ -43,7 +44,8 @@ def provide_derived_data():
 
     return 
 
-def provide_algorithm(raw_data_df):
+def provide_algorithm():
+
     with st.expander("Algorithm for Home Advantage"):
         st.markdown(
             """
@@ -77,10 +79,22 @@ Mustern und ihrer Kenntnis der Dynamik von Heim- und Auswärtsspielen basieren.
 """
         )
 
-        prepared_data_df = raw_data_df.copy()
+        response = requests.get(url=ENDPOINT_ALGO)
+        raw_data = response.json()
+        raw_data_string = json.dumps(raw_data)
+        parsed_data = json.loads(raw_data_string)
+        raw_data_df = pd.DataFrame(parsed_data)
+
+
+
+        prepared_data_df =  raw_data_df
+
+        print(raw_data_df)
+        print(raw_data_df)
 
         condition_1 = raw_data_df["points_scored"] - raw_data_df["points_allowed"] > 3
         condition_2 = raw_data_df["points_scored"] - raw_data_df["points_allowed"] < 0
+
         prepared_data_df["true wins"] = condition_1 | condition_2
         st.write(prepared_data_df)
     return
@@ -147,7 +161,7 @@ def main():
     provide_derived_data() 
 
     # # Level 3
-    # provide_algorithm(raw_data_df=raw_data_df)
+    provide_algorithm()
 
     # # Level 4
     
@@ -157,7 +171,7 @@ def main():
     #     away_scoring_mean,
     #     away_allowed_mean,
     # ) = provide_decision_support(home_stats, away_stats, home_team, away_team)
-    # return 
+    
 
     # # Level 5
     # provide_automated_decision(

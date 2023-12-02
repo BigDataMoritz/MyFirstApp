@@ -35,3 +35,8 @@ async def get_stats(team_type: str = "team"):
 
     return stats.to_json(orient="index")
 
+@app.get("/level-3/algo")
+async def get_algo():
+    data = FileHanlder() 
+    return data["games"]
+    
