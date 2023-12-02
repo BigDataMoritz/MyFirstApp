@@ -4,8 +4,8 @@ import streamlit as st
 import pandas as pd
 
 URL  = "http://127.0.0.1:8000"
-ENDPOINT_DATA = URL+ "/data"
-ENDPOINT_TEAMS = URL+ "/teams"
+ENDPOINT_DATA = URL+ "/level-1/data"
+ENDPOINT_TEAMS = URL+ "/level-1/teams"
 
 def provide_raw_data():
    
@@ -136,7 +136,7 @@ def main():
 
     home_team = st.selectbox(label="Home", options=teams, index=0)
     away_team = st.selectbox(label="Away", options=teams, index=1)
-    
+
     #Level 1 
     provide_raw_data()
     
