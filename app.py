@@ -1,3 +1,4 @@
+from io import StringIO
 import json
 import requests
 import streamlit as st 
@@ -6,39 +7,41 @@ import pandas as pd
 URL  = "http://127.0.0.1:8000"
 ENDPOINT_DATA = URL+ "/level-1/data"
 ENDPOINT_TEAMS = URL+ "/level-1/teams"
+ENDPOINT_STATS = URL+ "/level-2/stats"
 
-def provide_raw_data():
-   
+
+
+def provide_raw_data():  
 
     response = requests.get(url=ENDPOINT_DATA)
-    raw_data = response.json
+    raw_data = response.json ()
   
     with st.expander(label="Raw Data"):
         st.json(raw_data)
 
     return
 
-def provide_derived_data(raw_data_df):
-
-    raw_data_df = pd.DataFrame(raw_data["games"])
-
+def provide_derived_data():
+      
     with st.expander(label="Insights"):
-        st.subheader("Home Insights")
-        home_stats = raw_data_df.groupby("team")[["points_scored", "points_allowed"]].mean()
-        home_stats["team"] = home_stats.index
-        home_stats.sort_values("points_scored", ascending=False, inplace=True)
-        home_stats.reset_index(drop=True, inplace=True)
-        home_stats.index += 1
-        st.write(home_stats)
 
-        st.subheader("Away Insights")
-        away_stats = raw_data_df.groupby("opponent")[["points_scored", "points_allowed"]].mean()
-        away_stats["team"] = away_stats.index
-        away_stats.sort_values("points_scored", ascending=False, inplace=True)
-        away_stats.reset_index(drop=True, inplace=True)
-        away_stats.index += 1
-        st.write(away_stats)
-    return home_stats, away_stats
+        team_types = ["team", "opponent"]
+
+        for team_type in team_types:
+            if team_type == "team": 
+                label = "Home"
+            else: 
+                label = "Away"
+
+        st.subheader(f"{label} Insights")
+        
+        response = requests.get(url=ENDPOINT_STATS, params={"team_type": team_type }) 
+        raw_data = response.json()
+        df = pd.read_json(StringIO(raw_data), orient="index")
+        print(df)
+        st.write(df)
+
+    return 
 
 def provide_algorithm(raw_data_df):
     with st.expander("Algorithm for Home Advantage"):
@@ -141,7 +144,7 @@ def main():
     provide_raw_data()
     
     # #Level 2
-    # home_stats, away_stats = provide_derived_data(raw_data_df=raw_data_df) 
+    provide_derived_data() 
 
     # # Level 3
     # provide_algorithm(raw_data_df=raw_data_df)
