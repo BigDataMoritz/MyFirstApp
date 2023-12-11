@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from requests import Session, RequestException
 
 URL = "https://www.pro-football-reference.com"
@@ -18,11 +19,17 @@ def request_url(session: Session, url: str, retries:int =3, timeout: int = 10 ):
     print(f"Die Anfrage an {url} ist final fehlgeschlagen.")
     return 
 
+def parse_html_to_soup(html: str) -> BeautifulSoup:
+        return BeautifulSoup(html, "html.parser")
 
 def main(): 
    http_session = Session () 
    html = request_url(session=http_session, url=URL)
-   print(html)
+   soup =  parse_html_to_soup(html)
+
+   print(soup)
+
+
 
 
 if __name__ == "__main__":
