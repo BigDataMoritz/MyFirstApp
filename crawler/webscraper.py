@@ -6,6 +6,8 @@ from rich import print
 
 HEADERS = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0"}
 INPUT_PATH = "/home/moritz/workspace/MyFirstApp/season_links.json"
+OUTPUT_PATH = "/home/moritz/workspace/MyFirstApp/scraped_data.json"
+
 
 def read_json(path: str) -> dict: 
     with open(path,"r") as file: 
@@ -28,6 +30,11 @@ def request_url(session: Session, url: str, retries:int =3, timeout: int = 10 ):
 
 def parse_html_to_soup(html: str) -> BeautifulSoup:
         return BeautifulSoup(html, "html.parser")
+
+def load_to_json_file(path:str,data:dict) -> None: 
+    with open (path,"w") as file: 
+        json.dump(data,file, indent=3)
+        return
 
 
 def main():
@@ -72,6 +79,8 @@ def main():
                 
             payload_data.append(data)
         scraped_data[key] = payload_data
+
+        load_to_json_file(OUTPUT_PATH, scraped_data)
         print(scraped_data)
 
     return 
